@@ -1,6 +1,28 @@
 ---
 layout: default
 ---
+<article class='hentry'>
+  <div class='box'>
+    <h1 class='text-primary'>Sapporo.beam(サッポロビーム)とは何ですか</h1>
+  </div>
+  <div class='content'>
+    <p>ErlangVMに載っている言語に関する話題やそうでない話題でわいわいやる集まりです．<br>だいたい毎週木曜日にやっています．</p>
+  </div>
+</article>
+
+<article class='hentry' id='next-time'>
+  <div class='box'>
+    <h1 class='text-primary'>次はいつやりますか</h1>
+  </div>
+  <div class='content'><a href='https://github.com/sapporo-beam/sapporo-beam/issues?labels=meetup'>githubのissue</a>をみてください．</div>
+</article>
+
+<article class='hentry'>
+  <div class='box'>
+    <h1 class='text-primary'>これまでどんなことしてましたか</h1>
+  </div>
+  <div class='content'>これまでの活動は<a href='https://github.com/sapporo-beam/sapporo-beam/issues?labels=meetup&state=closed'>githubのissue</a>や以下の記事をみてください．</a></div>
+</article>
 
 {% for post in site.posts %}
 <article class='hentry'>
@@ -13,3 +35,21 @@ layout: default
   </div>
 </article>
 {% endfor %}
+
+<script>
+$(function() {
+  $.ajax({
+    url: "https://api.github.com/repos/sapporo-beam/sapporo-beam/issues"
+  })
+    .done(function(data) {
+      // assuming data type is Array
+      if(data.length > 0) {
+        var nextMeetup = data[0];
+        var html = markdown.toHTML(nextMeetup.body);
+        $("#next-time div.content").html(function(i, old) {
+          return old + "<p>issueの最新情報は以下のとおりです．<br>" + html + "</p>";
+        });
+      }
+    });
+  });
+</script>
