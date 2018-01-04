@@ -1,55 +1,68 @@
----
-layout: default
----
-<article class='hentry'>
-  <div class='box'>
-    <h1 class='text-primary'>Sapporo.beam(サッポロビーム)とは何ですか</h1>
-  </div>
-  <div class='content'>
-    <p>ErlangVMに載っている言語に関する話題やそうでない話題でわいわいやる集まりです．<br>だいたい毎週木曜日にやっています．</p>
-  </div>
-</article>
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Sapporo.beam(サッポロビーム)</title>
+    <meta name="description" content="ErlangVM(BEAM)やそうでない話題についてわいわいやる集まりサッポロビームについて">
+    <meta name="keywords" content="ErlangVM,サッポロビーム,sapporo,beam">
+  </head>
+  <body>
+    <h1>Sapporo.beam(サッポロビーム)</h1>
+    <article>
+      <h2>サッポロビームとは何ですか</h2>
+      <div class="content">
+        <p>ErlangVM(BEAM)やそうでない話題についてわいわいやる集まりです．<br>だいたい毎週木曜日19:00-21:00すぎまで札幌グランドホテルのスターバックスの片隅でやっています．</p>
+      </div>
+    </article>
+    <article id="next-time">
+      <h2>次はいつやりますか</h2>
+      <div class="content">
+        <a href="https://github.com/sapporo-beam/sapporo-beam/issues?labels=meetup">githubのissue</a>をみてください．
+      </div>
+    </article>
+    <article>
+      <h2>これまでどんなことしてましたか</h2>
+      <div class="content">
+        これまでの活動は<a href="https://github.com/sapporo-beam/sapporo-beam/issues?labels=meetup&state=closed">githubのissue</a>をみてください．<br>
+        たまにRuby札幌と一緒にRubySapporo.beamというイベントをしています．
+        <ul>
+          <li><a href="https://rubysapporo.doorkeeper.jp/events/50956">RubySapporo.beam</a></li>
+          <li><a href="https://rubysapporo.doorkeeper.jp/events/57253">RubySapporo.beam#2</a></li>
+          <li><a href="https://rubysapporo.doorkeeper.jp/events/65693">RubySapporo.beam#3</a></li>
+        </ul>
+      </div>
+    </article>
+    <script src="js/markdown.min.js"></script>
+    <script>
+     const ready = (fn) => {
+         if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading"){
+             fn();
+         } else {
+             document.addEventListener("DOMContentLoaded", fn);
+         }
+     };
 
-<article class='hentry' id='next-time'>
-  <div class='box'>
-    <h1 class='text-primary'>次はいつやりますか</h1>
-  </div>
-  <div class='content'><a href='https://github.com/sapporo-beam/sapporo-beam/issues?labels=meetup'>githubのissue</a>をみてください．</div>
-</article>
+     const appendContent = () => {
+         const url = "https://api.github.com/repos/sapporo-beam/sapporo-beam/issues";
+         const request = new XMLHttpRequest();
+         request.open("GET", url, true);
+         request.onload = function() {
+             if (this.status >= 200 && this.status < 400) {
+                 const data = JSON.parse(this.response);
+                 if(data.length > 0) {
+                     const nextMeetup = data[0];
+                     const html = markdown.toHTML(nextMeetup.body);
+                     const old = document.querySelector("#next-time div.content").innerHTML;
+                     document.querySelector("#next-time div.content").innerHTML = old + "<p>issueの最新情報は以下のとおりです．<br>" + html + "</p>";
+                 }
+             }
+         };
+         request.send();
+     };
 
-<article class='hentry'>
-  <div class='box'>
-    <h1 class='text-primary'>これまでどんなことしてましたか</h1>
-  </div>
-  <div class='content'>これまでの活動は<a href='https://github.com/sapporo-beam/sapporo-beam/issues?labels=meetup&state=closed'>githubのissue</a>や以下の記事をみてください．</a></div>
-</article>
-
-{% for post in site.posts %}
-<article class='hentry'>
-  <div class='box'>
-    <p class='text-muted pull-right'>{{ post.date | date_to_string }}</p>
-    <h1 class='text-primary'><a href='{{ post.url }}'>{{ post.title }}</a></h1>
-  </div>
-  <div class='content'>
-    {{ post.excerpt }}
-  </div>
-</article>
-{% endfor %}
-
-<script>
-$(function() {
-  $.ajax({
-    url: "https://api.github.com/repos/sapporo-beam/sapporo-beam/issues"
-  })
-    .done(function(data) {
-      // assuming data type is Array
-      if(data.length > 0) {
-        var nextMeetup = data[0];
-        var html = markdown.toHTML(nextMeetup.body);
-        $("#next-time div.content").html(function(i, old) {
-          return old + "<p>issueの最新情報は以下のとおりです．<br>" + html + "</p>";
-        });
-      }
-    });
-  });
-</script>
+     ready(appendContent);
+    </script>
+  </body>
+</html>
